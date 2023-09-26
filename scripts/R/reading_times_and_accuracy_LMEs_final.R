@@ -17,6 +17,7 @@ dictionary <- data.frame(variable = c("ART", "RE"),
                            "Reading Enjoyment"))
 dictionary
 
+# scale the numerical data
 data$ART_z <- as.numeric(scale(data$ART_score_value))
 data$RE_z <- as.numeric(scale(data$RE_Score))
 
@@ -24,19 +25,21 @@ accuracy$ART_z <- as.numeric(scale(accuracy$ART_score_value))
 accuracy$RE_z <- as.numeric(scale(accuracy$RE_Score))
 
 #code the comparison contrasts by assigning dummy coding
+# Recode "Active" or "Passive" as -1
 data$Easy_Hard <- as.numeric(with(data, ifelse(SentenceType  ==  "Active" | 
                                                  SentenceType  ==  "Passive", "-1", "1")))
-
+# Recode "Active" as -1, "Passive" as 1, and 0 otherwise
 data$Easy <- as.numeric(with(data, ifelse(SentenceType  ==  "Active", "-1", 
                                           ifelse(SentenceType  ==  "Passive", "1", "0"))))
-
+# Recode "SRC" as -1, "ORC" as 1, and 0 otherwise
 data$Hard <- as.numeric(with(data, ifelse(SentenceType  ==  "SRC", "-1", 
                                           ifelse(SentenceType  ==  "ORC", "1", "0"))))
-
+# Recode "Active" as -3, "Passive" as -1, "SRC" as 1, and 3 otherwise
 data$LinearTrend <- as.numeric(with(data, ifelse(SentenceType == "Active", "-3", 
                                               ifelse(SentenceType == "Passive", "-1", 
                                                      ifelse(SentenceType == "SRC", "1", "3")))))
 
+# Same transformations as `data`
 accuracy$Easy_Hard <- as.numeric(with(accuracy, ifelse(SentenceType == "Active" | 
                                                          SentenceType == "Passive", "-1", "1")))
 
@@ -53,7 +56,7 @@ accuracy$LinearTrend <- as.numeric(with(accuracy, ifelse(SentenceType == "Active
 
 
 
-#code exploratory treatment contrast with Active sentences set as a baseline
+# code exploratory treatment contrast with Active sentences set as a baseline
 
 data$Condition <- as.factor(with(data, ifelse(SentenceType == "Active", "1", 
                                             ifelse(SentenceType == "Passive", "2", 
@@ -63,38 +66,39 @@ accuracy$Condition <- as.factor(with(accuracy, ifelse(SentenceType == "Active", 
                                             ifelse(SentenceType == "Passive", "2", 
                                                    ifelse(SentenceType == "SRC", "3", "4")))))
 
-
 data$SentenceType <- as.factor(data$SentenceType)
+
 accuracy$SentenceType <- as.factor(accuracy$SentenceType)
 
 
 
 
-#Response time raw and log transformed vs ART and RE in separate models
+# Response time raw and log transformed vs ART and RE in separate models
 
-ART_Orthogonal = glmer(ReadingTime_ms ~ Easy_Hard * ART_z + Easy*ART_z + Hard*ART_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
+# Fitting generalized linear models predicting raw response time with ART
+ART_Orthogonal = glmer(ReadingTime_ms ~ Easy_Hard * ART_z + Easy * ART_z + Hard * ART_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(ART_Orthogonal)
-ART_Orthogonal_Log = lmer(Reading_Time_Log ~ SES_factor + Easy_Hard*ART_z + Easy*ART_z + Hard*ART_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
+# Fitting multilevel linear models predicting log response time with ART
+ART_Orthogonal_Log = lmer(Reading_Time_Log ~ SES_factor + Easy_Hard * ART_z + Easy * ART_z + Hard * ART_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(ART_Orthogonal_Log)
 
-
-RE_Orthogonal = lmer(ReadingTime_ms ~ Easy_Hard*RE_z + Easy*RE_z + Hard*RE_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
+# Fitting multilevel linear models predicting raw response time with RE
+RE_Orthogonal = lmer(ReadingTime_ms ~ Easy_Hard * RE_z + Easy * RE_z + Hard * RE_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(RE_Orthogonal)
-RE_Orthogonal_Log = lmer(Reading_Time_Log ~ Easy_Hard*RE_z + Easy * RE_z + Hard * RE_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
+# Fitting multilevel linear models predicting log response time with RE
+RE_Orthogonal_Log = lmer(Reading_Time_Log ~ Easy_Hard * RE_z + Easy * RE_z + Hard * RE_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(RE_Orthogonal_Log)
 
-
-#both ART and RE in one model
+# both ART and RE in one model
 ART_RE_Orthogonal_Three_Way = lmer(ReadingTime_ms ~ Easy_Hard * ART_z + Easy * ART_z + Hard * ART_z + Easy_Hard * RE_z + Easy * RE_z + Hard * RE_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(ART_RE_Orthogonal_Three_Way)
-
 
 ART_RE_Orthogonal_Three_Way_Log = lmer(Reading_Time_Log ~ Easy_Hard * ART_z + Easy * ART_z + Hard * ART_z + Easy_Hard * RE_z + Easy * RE_z + Hard * RE_z + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(ART_RE_Orthogonal_Three_Way_Log)
 
 
 
-#exploratory  analyses - treatment contrast
+# exploratory  analyses - treatment contrast
 ART_Treatment_raw = lmer(ReadingTime_ms ~ Condition * ART_z * SES_factor + (1 | ItemType) + (1 | ParticipantCode), data = data)
 summary(ART_Treatment_raw)
 ART_Treatment_Log = lmer(Reading_Time_Log ~ Condition * ART_z * SES_factor + (1 | ItemType) + (1 | ParticipantCode), data = data)
