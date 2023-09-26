@@ -1,0 +1,11 @@
+TODO
+
+1. Rename all files following the tidyverse style guide
+
+2. Adjust the code style in the reading times script.
+
+3. Add or modify code to read the data files
+
+4. Add code for familiarizing with the variables and type of information they contain
+
+5. Add comments to each step
