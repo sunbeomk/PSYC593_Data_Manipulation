@@ -1,10 +1,13 @@
 library(tidyverse)
 library(lme4)
 library(coda)
+library(here)
+
+data_path <- here::here("data", "raw_data")
 
 
-accuracy <- read.csv('Cleaned_211_All_accuracy.csv')
-data <- read.csv('Cleaned_211_Correct.csv')
+accuracy <- read.csv(file.path(data_path, "cleaned_211_all_accuracy.csv"))
+data <- read.csv(file.path(data_path, 'cleaned_211_correct.csv'))
 
 
 data$ART_z <- as.numeric(scale(data$ART_score_value))
