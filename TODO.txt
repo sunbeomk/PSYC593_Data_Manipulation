@@ -9,3 +9,5 @@ TODO
 4. Add code for familiarizing with the variables and type of information they contain
 
 5. Add comments to each step
+
+6. Make transformations tidyverse style

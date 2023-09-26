@@ -9,6 +9,13 @@ data_path <- here::here("data", "raw_data")
 accuracy <- read.csv(file.path(data_path, "cleaned_211_all_accuracy.csv"))
 data <- read.csv(file.path(data_path, 'cleaned_211_correct.csv'))
 
+names(accuracy)
+names(accuracy) == names(data)
+str(accuracy)
+dictionary <- data.frame(variable = c("ART", "RE"), 
+                         description = c("Author Recognition Task", 
+                           "Reading Enjoyment"))
+dictionary
 
 data$ART_z <- as.numeric(scale(data$ART_score_value))
 data$RE_z <- as.numeric(scale(data$RE_Score))
