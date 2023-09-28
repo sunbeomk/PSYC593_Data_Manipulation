@@ -57,17 +57,15 @@ accuracy$LinearTrend <- as.numeric(with(accuracy, ifelse(SentenceType == "Active
 
 
 # code exploratory treatment contrast with Active sentences set as a baseline
-
+# Recode `Condition` variable, "Active" as 1, "Passive" as 2, "SRC" as 3, 4 otherwise
 data$Condition <- as.factor(with(data, ifelse(SentenceType == "Active", "1", 
                                             ifelse(SentenceType == "Passive", "2", 
                                                    ifelse(SentenceType == "SRC", "3", "4")))))
-
 accuracy$Condition <- as.factor(with(accuracy, ifelse(SentenceType == "Active", "1", 
                                             ifelse(SentenceType == "Passive", "2", 
                                                    ifelse(SentenceType == "SRC", "3", "4")))))
-
+# Transform `SentenceType` varialbe as factors
 data$SentenceType <- as.factor(data$SentenceType)
-
 accuracy$SentenceType <- as.factor(accuracy$SentenceType)
 
 
