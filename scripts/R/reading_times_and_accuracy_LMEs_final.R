@@ -20,9 +20,16 @@ dictionary
 # scale the numerical data
 data$ART_z <- as.numeric(scale(data$ART_score_value))
 data$RE_z <- as.numeric(scale(data$RE_Score))
-
 accuracy$ART_z <- as.numeric(scale(accuracy$ART_score_value))
 accuracy$RE_z <- as.numeric(scale(accuracy$RE_Score))
+# tidyverse version with mutate function
+data |>
+  mutate(ART_z = as.numeric(scale(ART_score_value)),
+         RE_z = as.numeric(scale(RE_Score))) -> data
+accuracy |>
+  mutate(ART_z = as.numeric(scale(ART_score_value)),
+         RE_z = as.numeric(scale(RE_Score))) -> accuracy
+
 
 #code the comparison contrasts by assigning dummy coding
 # Recode "Active" or "Passive" as -1
@@ -38,21 +45,64 @@ data$Hard <- as.numeric(with(data, ifelse(SentenceType  ==  "SRC", "-1",
 data$LinearTrend <- as.numeric(with(data, ifelse(SentenceType == "Active", "-3", 
                                               ifelse(SentenceType == "Passive", "-1", 
                                                      ifelse(SentenceType == "SRC", "1", "3")))))
+# tidyverse version with mutate function
+data |>
+  mutate(
+    Easy_Hard = case_when(
+      SentenceType == "Active" | SentenceType == "Passive" ~ -1,
+      .default = 1
+      ),
+    Easy = case_when(
+      SentenceType == "Active"  ~ -1,
+      SentenceType == "Passive" ~ 1,
+      .default = 0
+    ),
+    Hard = case_when(
+      SentenceType == "SRC" ~ -1,
+      SentenceType == "ORC" ~ 1,
+      .default = 0
+    ),
+    LinearTrend = case_when(
+      SentenceType == "Active"  ~ -3,
+      SentenceType == "Passive" ~ -1,
+      SentenceType == "SRC"     ~ 1,
+      .default = 3
+    )
+  ) -> data
 
 # Same transformations as `data`
 accuracy$Easy_Hard <- as.numeric(with(accuracy, ifelse(SentenceType == "Active" | 
                                                          SentenceType == "Passive", "-1", "1")))
-
 accuracy$Easy <- as.numeric(with(accuracy, ifelse(SentenceType == "Acive", "-1", 
                                                   ifelse(SentenceType == "Passive", "1", "0"))))
-
 accuracy$Hard <- as.numeric(with(accuracy, ifelse(SentenceType == "SRC", "-1", 
                                                   ifelse(SentenceType == "ORC", "1", "0"))))
-
 accuracy$LinearTrend <- as.numeric(with(accuracy, ifelse(SentenceType == "Active", "-3", 
                                                          ifelse(SentenceType == "Passive", "-1", 
                                                                 ifelse(SentenceType == "SRC", "1", "3")))))
-
+accuracy |>
+  mutate(
+    Easy_Hard = case_when(
+      SentenceType == "Active" | SentenceType == "Passive" ~ -1,
+      .default = 1
+    ),
+    Easy = case_when(
+      SentenceType == "Active"  ~ -1,
+      SentenceType == "Passive" ~ 1,
+      .default = 0
+    ),
+    Hard = case_when(
+      SentenceType == "SRC" ~ -1,
+      SentenceType == "ORC" ~ 1,
+      .default = 0
+    ),
+    LinearTrend = case_when(
+      SentenceType == "Active"  ~ -3,
+      SentenceType == "Passive" ~ -1,
+      SentenceType == "SRC"    ~ 1,
+      .default = 3
+    )
+  ) -> accuracy
 
 
 
@@ -64,11 +114,33 @@ data$Condition <- as.factor(with(data, ifelse(SentenceType == "Active", "1",
 accuracy$Condition <- as.factor(with(accuracy, ifelse(SentenceType == "Active", "1", 
                                             ifelse(SentenceType == "Passive", "2", 
                                                    ifelse(SentenceType == "SRC", "3", "4")))))
+# tidyverse style
+data |>
+  mutate(Condtion = case_when(
+    SentenceType == "Active"  ~ "1",
+    SentenceType == "Passive" ~ "2",
+    SentenceType == "SRC"     ~ "3",
+    .default = "4"
+  )) |>
+  mutate(Condition = as.factor(Condition)) -> data
+accuracy |>
+  mutate(Condtion = case_when(
+    SentenceType == "Active"  ~ "1",
+    SentenceType == "Passive" ~ "2",
+    SentenceType == "SRC"     ~ "3",
+    .default = "4"
+  )) |>
+  mutate(Condition = as.factor(Condition)) -> accuracy
+
+
 # Transform `SentenceType` varialbe as factors
 data$SentenceType <- as.factor(data$SentenceType)
 accuracy$SentenceType <- as.factor(accuracy$SentenceType)
-
-
+# tidyverse style
+data |>
+  mutate(SentenceType = as.factor(SentenceType)) -> data
+accuracy |>
+  mutate(SentenceType = as.factor(SentenceType)) -> accuracy
 
 
 # Response time raw and log transformed vs ART and RE in separate models
